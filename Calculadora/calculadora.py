@@ -33,6 +33,39 @@ def main(page: ft.page):
 
     result = ft.Text(value = '0', color = colors.WHITE, size = 20)
 
+    def calculate(operador, value_at):
+        try:
+            value = eval(value_at)
+
+            if operador ==  '%':
+                value /= 100
+            elif operador == '+-':
+                value = -value
+        except:
+            return 'Error'
+        return value
+
+
+    def select(e):
+        value_at = result.value if result.value not in ('0', 'Error') else ''
+        value = e.control.content.value
+
+        if value.isdigit():
+            value = value_at + value
+        elif value == 'AC':
+            value = '0'
+        else:
+            if value_at and value_at[-1] in ('/', '*', '-', '+', '.'):
+                value_at = value_at[:-1]
+            
+            value = value_at + value
+
+            if value[-1] in  ('=', '%', '+-'):
+                value = calculate(value[-1], value_at)
+        result.value = value
+        result.update()
+
+
     display =  ft.Row(
         width = 350,
         controls = [result],
@@ -40,12 +73,13 @@ def main(page: ft.page):
     )
 
     btn = [ft.Container(
-        content = ft.Text(value=btn['operador'], color=btn['fonte']),
+        content = ft.Text(value=btn['operador'], color=btn['fonte'], style="font-weight:bold;"),
         width = 70,
         height = 70,
         bgcolor = btn['fundo'],
         border_radius = 100,
         alignment = ft.alignment.center,
+        on_click = select
     )   for btn in botoes]
 
     keyboard = ft.Row(
